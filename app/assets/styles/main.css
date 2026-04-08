@@ -1,0 +1,319 @@
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === LENIS === */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+
+/* === CUSTOM PROPERTIES === */
+:root {
+  /* Palette — joseph-san inspired dark monochrome */
+  --color-bg: #07161a;
+  --color-text: #ffffff;
+  --color-text-dim: rgba(255, 255, 255, 0.5);
+  --color-text-muted: rgba(255, 255, 255, 0.3);
+  --color-accent: #b8964e;
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Geist', -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+
+  /* Spacing */
+  --pad-x: 2em;
+  --pad-x-mobile: 1.5rem;
+  --scene-py: 5rem;
+}
+
+/* === SCREEN READER === */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === BASE === */
+html {
+  font-size: clamp(14px, 1.4vw, 18px);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  line-height: 1;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+/* === LOADER === */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+.loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loader__text {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-text-dim);
+}
+.loader__bar {
+  width: 120px;
+  height: 1px;
+  background: var(--color-text-muted);
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+.loader__fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--color-text);
+  transition: width 0.3s ease;
+}
+
+/* === CANVAS === */
+.webgl-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* === NAV === */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  padding: 1.5rem var(--pad-x);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.nav.visible { opacity: 1; }
+.nav__name {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+.nav__contact {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-text-dim);
+  transition: color 0.3s ease;
+}
+.nav__contact:hover { color: var(--color-text); }
+
+@media (max-width: 768px) {
+  .nav { padding: 1.2rem var(--pad-x-mobile); }
+}
+
+/* === SCROLL CONTAINER === */
+.scroll-container {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+.scroll-container a,
+.scroll-container button {
+  pointer-events: auto;
+}
+
+/* === SCENE SECTIONS === */
+.scene {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--scene-py) var(--pad-x);
+}
+.scene--center {
+  justify-content: center;
+  align-items: flex-start;
+}
+.scene--hero {
+  justify-content: space-between;
+  padding-top: 8rem;
+}
+
+@media (max-width: 768px) {
+  .scene { padding: var(--scene-py) var(--pad-x-mobile); }
+}
+
+/* === TYPOGRAPHY — DISPLAY === */
+.display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 3.5rem;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.display--lg { font-size: 4.5rem; }
+.display span.dim { color: var(--color-text-dim); }
+
+@media (max-width: 768px) {
+  .display { font-size: 2.5rem; }
+  .display--lg { font-size: 3rem; }
+}
+
+/* === TYPOGRAPHY — BODY === */
+.body-text {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 45ch;
+}
+
+/* === TYPOGRAPHY — META === */
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-text-dim);
+  line-height: 1.6;
+}
+
+/* === TYPOGRAPHY — OVERLINE === */
+.overline {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--color-text-dim);
+}
+
+/* === SCROLL CTA === */
+.scroll-cta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-text-dim);
+}
+.scroll-cta span { color: var(--color-text); }
+
+/* === PROGRESS BAR === */
+.progress-track {
+  position: fixed;
+  right: 4px;
+  top: 0;
+  height: 100vh;
+  width: 3px;
+  z-index: 90;
+  padding: 4px 0;
+  mix-blend-mode: difference;
+}
+.progress-fill {
+  width: 100%;
+  height: 0%;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 2px;
+  transition: height 0.1s linear;
+}
+
+/* === SKILLS LIST === */
+.skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.skills__item {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.skills__item span.dim { color: var(--color-text-dim); }
+
+/* === WORK SECTION === */
+.work-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* === FOOTER / CONTACT === */
+.contact-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+.contact-links a {
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.25rem 0;
+  display: inline-block;
+  transition: opacity 0.3s ease;
+}
+.contact-links a:hover { opacity: 0.5; }
+
+/* === COPYRIGHT === */
+.copyright {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  max-width: 50ch;
+  line-height: 1.5;
+  text-align: right;
+  position: fixed;
+  bottom: 1.5rem;
+  right: var(--pad-x);
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .copyright { right: var(--pad-x-mobile); font-size: 0.45rem; }
+}
+
+/* === ANIMATIONS === */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .lenis.lenis-smooth { scroll-behavior: smooth !important; }
+}
