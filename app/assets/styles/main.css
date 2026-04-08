@@ -289,6 +289,96 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   line-height: 1.4;
 }
 
+/* === WORK GRID === */
+.work-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 0.75rem;
+  max-width: 500px;
+}
+.work-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
+  transition: opacity 0.3s ease;
+  pointer-events: auto;
+}
+.work-card:hover { opacity: 0.6; }
+.work-card__name {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+.work-card__cat {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* === WORKS OVERLAY === */
+.works-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(7, 22, 26, 0.92);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 5rem var(--pad-x);
+  pointer-events: auto;
+}
+.works-overlay__close {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  pointer-events: auto;
+}
+.works-overlay__content {
+  max-width: 600px;
+}
+.works-overlay__title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 2.5rem;
+  line-height: 0.95;
+  margin-bottom: 1rem;
+}
+.works-overlay__desc {
+  line-height: 1.6;
+}
+.works-overlay__link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid var(--color-text-dim);
+  padding-bottom: 2px;
+  transition: opacity 0.3s ease;
+}
+.works-overlay__link:hover { opacity: 0.5; }
+
+/* Works overlay transitions */
+.works-enter-active,
+.works-leave-active {
+  transition: opacity 0.4s ease;
+}
+.works-enter-from,
+.works-leave-to {
+  opacity: 0;
+}
+
 /* === WORK STATS === */
 .work-stats {
   display: flex;
