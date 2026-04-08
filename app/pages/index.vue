@@ -15,9 +15,7 @@
     </nav>
 
     <!-- WebGL Canvas -->
-    <ClientOnly>
-      <canvas ref="canvasRef" class="webgl-canvas" />
-    </ClientOnly>
+    <canvas ref="canvasRef" class="webgl-canvas" />
 
     <!-- Scroll Progress -->
     <div class="progress-track">
