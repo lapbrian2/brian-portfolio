@@ -204,25 +204,21 @@ sceneManager.currentThreeScene = sceneManager.scenes[0].threeScene
 sceneManager.renderPass.scene = sceneManager.scenes[0].threeScene
 showSceneUI(0)
 
-// Loader: animate fill, then dismiss and start
-loaderFill.style.transition = 'width 1.8s cubic-bezier(0.65, 0, 0.35, 1)'
-loaderFill.style.width = '100%'
-
-loaderFill.addEventListener('transitionend', () => {
+// Loader: defer width change by one frame so CSS transition actually fires
+function dismissLoader() {
+  if (running) return
   loader.classList.add('hidden')
   nav.classList.add('visible')
   scroll.start()
   running = true
   animate()
-}, { once: true })
+}
 
-// Fallback if transitionend doesn't fire
-setTimeout(() => {
-  if (!running) {
-    loader.classList.add('hidden')
-    nav.classList.add('visible')
-    scroll.start()
-    running = true
-    animate()
-  }
-}, 2500)
+loaderFill.style.transition = 'width 1.8s cubic-bezier(0.65, 0, 0.35, 1)'
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    loaderFill.style.width = '100%'
+  })
+})
+loaderFill.addEventListener('transitionend', dismissLoader, { once: true })
+setTimeout(dismissLoader, 2200)
