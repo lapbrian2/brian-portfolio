@@ -76,29 +76,49 @@
         </div>
       </section>
 
-      <!-- Scene 2: Work -->
-      <section :class="['scene-ui', { visible: currentScene === 2 }]">
-        <div class="scene-ui__bottom-left">
-          <h2 class="overline flicker">Featured Work</h2>
-          <div class="work-grid">
+      <!-- Scene 2: Featured Work -->
+      <section :class="['scene-ui scene-ui--work', { visible: currentScene === 2 }]">
+        <h2 class="overline flicker" style="margin-bottom: 1.5rem;">Featured Work</h2>
+
+        <!-- Hero projects — big image cards -->
+        <div class="featured-grid">
+          <button
+            v-for="(project, i) in featuredProjects"
+            :key="project.id"
+            class="featured-card"
+            @click="openProject(project._index)"
+          >
+            <div v-if="project.image" class="featured-card__image">
+              <img :src="project.image" :alt="project.name" loading="lazy" />
+            </div>
+            <div v-else class="featured-card__image featured-card__placeholder">
+              <span class="featured-card__icon">{{ project.id.charAt(0).toUpperCase() }}</span>
+            </div>
+            <div class="featured-card__info">
+              <span class="featured-card__name">{{ project.name }}</span>
+              <span class="featured-card__desc dim">{{ project.short }}</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Supporting work — compact list -->
+        <div class="supporting-work">
+          <h3 class="overline" style="margin-bottom: 0.5rem; margin-top: 1.5rem;">Infrastructure &amp; Systems</h3>
+          <div class="supporting-list">
             <button
-              v-for="(project, i) in projects"
+              v-for="(project, i) in supportingProjects"
               :key="project.id"
-              class="work-card"
-              :data-scramble="true"
-              @click="openProject(i)"
+              class="supporting-item"
+              @click="openProject(project._index)"
             >
-              <span class="work-card__name">{{ project.name }}</span>
-              <span class="work-card__cat dim">{{ project.category }}</span>
+              <span class="supporting-item__name">{{ project.name }}</span>
+              <span class="supporting-item__cat dim">{{ project.short }}</span>
             </button>
           </div>
-          <p class="meta" style="margin-top: 1rem;">
-            Enterprise + independent builds since 2018
-          </p>
         </div>
       </section>
 
-      <!-- Scene 3: Systems -->
+      <!-- Scene 3: Systems / Memory -->
       <section :class="['scene-ui', { visible: currentScene === 3 }]">
         <div class="scene-ui__full">
           <h2 class="display flicker">
@@ -109,14 +129,15 @@
               43 orchestrator skills, <span class="dim">tiered memory system,</span>
             </p>
             <p class="skills__item">
-              <span class="dim">virtual scroll controllers,</span> MCP server pipelines,
+              Memory drift radar, <span class="dim">research sweeps,</span>
             </p>
             <p class="skills__item">
-              <span class="dim">self-improving</span> agent architectures.
+              <span class="dim">MCP server pipelines,</span> self-improving <span class="dim">agent architectures.</span>
             </p>
           </div>
           <div class="meta" style="margin-top: 2rem;">
-            <span>/// The tools that build the tools</span>
+            <span>/// The tools that build the tools</span><br>
+            <span>/// 40+ sessions of accumulated intelligence</span>
           </div>
         </div>
       </section>
@@ -142,20 +163,34 @@
       <div v-if="activeProject !== null" class="works-overlay">
         <button class="works-overlay__close" data-scramble @click="activeProject = null">Close</button>
         <div class="works-overlay__content">
+          <div class="works-overlay__image" v-if="projects[activeProject].image">
+            <img :src="projects[activeProject].image" :alt="projects[activeProject].name" />
+          </div>
           <h2 class="works-overlay__title">{{ projects[activeProject].name }}</h2>
           <p class="works-overlay__desc meta">{{ projects[activeProject].description }}</p>
           <p class="works-overlay__stack meta" style="margin-top: 0.5rem;">
             {{ projects[activeProject].stack }}
           </p>
-          <a
-            v-if="projects[activeProject].url"
-            :href="projects[activeProject].url"
-            target="_blank"
-            class="works-overlay__link"
-            data-scramble
-          >
-            Visit Project
-          </a>
+          <div class="works-overlay__actions">
+            <a
+              v-if="projects[activeProject].url"
+              :href="projects[activeProject].url"
+              target="_blank"
+              class="works-overlay__link"
+              data-scramble
+            >
+              Visit Project
+            </a>
+            <a
+              v-if="projects[activeProject].github"
+              :href="projects[activeProject].github"
+              target="_blank"
+              class="works-overlay__link"
+              data-scramble
+            >
+              GitHub
+            </a>
+          </div>
         </div>
       </div>
     </Transition>
@@ -182,72 +217,113 @@ import * as THREE from 'three'
 import { gsap } from 'gsap'
 
 // --- Projects data ---
+const hoveredProject = ref<number | null>(null)
+
 const projects = [
+  // 0 — FEATURED: Product
+  {
+    id: 'style-dna',
+    name: 'Style DNA Extractor',
+    category: 'product',
+    short: 'AI-powered visual style extraction',
+    image: '/projects/style-dna.png',
+    description: 'Shipped product. Reverse-engineers visual styles into reproducible AI generation parameters. Opus-powered extraction engine with Supabase auth, Stripe billing, and a design system called "The Synthetic Architect." Real users, real revenue path.',
+    stack: 'NUXT 4 / CLAUDE OPUS / SUPABASE / STRIPE',
+    url: 'https://style-dna-extractor.vercel.app/',
+    github: null,
+  },
+  // 1 — FEATURED: Dashboard / Design
+  {
+    id: 'session-pulser',
+    name: 'Session Pulser',
+    category: 'dashboard',
+    short: 'Sci-fi session analytics',
+    image: null,
+    description: 'Sci-fi themed session analytics dashboard. 3D topographic terrain visualization of token usage, activity heatmaps, draggable panel layout, terminal resumption via WebSocket PTY. The engineering standard for dense data visualization and tools.',
+    stack: 'THREE.JS / XTERM.JS / WEBSOCKET / NODE.JS',
+    url: null,
+    github: null,
+  },
+  // 2 — FEATURED: Creative
   {
     id: 'bomb-the-web',
     name: 'Bomb The Web',
     category: 'creative',
-    description: 'Graffiti-inspired art portfolio. Single-file 3700-line index.html with Three.js spray cans, GSAP scroll choreography, Web Audio, and 7 hidden Easter eggs including Konami code party mode.',
+    short: 'Graffiti-inspired 3D portfolio',
+    image: null,
+    description: 'Single-file 3700-line index.html. Three.js toon-shaded spray cans, GSAP scroll choreography, interactive spray paint canvas, Web Audio synthesized effects, and 7 hidden Easter eggs including Konami code party mode.',
     stack: 'THREE.JS / GSAP / WEB AUDIO / CANVAS 2D',
     url: 'https://brian-lapinski-portfolio.vercel.app/',
+    github: 'https://github.com/lapbrian2/bomb-the-web',
   },
+  // 3 — FEATURED: Visualization
   {
     id: 'ml-systems',
     name: 'ML Systems Universe',
     category: 'visualization',
-    description: 'Interactive 3D visualization mapping the machine learning ecosystem. Explore models, architectures, and training paradigms as navigable constellations.',
+    short: 'Interactive ML ecosystem map',
+    image: '/projects/ml-systems.png',
+    description: 'Interactive 3D visualization mapping the machine learning ecosystem. Navigate models, architectures, and training paradigms as constellations in a dark-field universe.',
     stack: 'THREE.JS / D3.JS / GSAP',
     url: 'https://ml-systems-universe.vercel.app/',
+    github: null,
   },
+  // 4 — Supporting: Memory
+  {
+    id: 'memory-system',
+    name: 'Agent Memory System',
+    category: 'infrastructure',
+    short: 'Tiered persistent memory with drift detection',
+    image: null,
+    description: 'Tiered persistent memory architecture with session journals, distilled memory (11x compression), heuristic injection, and drift radar. Research Radar feeds frontier intelligence into the system on 24-hour sweep cycles. The continuity layer across 40+ agent sessions.',
+    stack: 'OBSIDIAN / MCP / PYTHON / YAML',
+    url: null,
+    github: null,
+  },
+  // 5 — Supporting: Skills
+  {
+    id: 'skills-orchestrator',
+    name: 'Skills Orchestrator',
+    category: 'infrastructure',
+    short: '43-skill MCP server with self-improvement',
+    image: null,
+    description: '43-skill MCP server with dynamic loading, memory-augmented dispatch, and context tree CRUD. Skills match, load, execute, and self-improve across sessions.',
+    stack: 'MCP / PYTHON / SQLITE / YAML',
+    url: null,
+    github: null,
+  },
+  // 6 — Supporting: CLI
+  {
+    id: 'cli-anything',
+    name: 'CLI-Anything',
+    category: 'infrastructure',
+    short: 'GUI software → agent-controllable APIs',
+    image: null,
+    description: 'Turns GUI software into agent-controllable APIs. 22 MCP tools across GIMP, Blender, Inkscape, and Draw.io. 1,508 passing tests across 11 applications. YAML recipe system for reusable pipelines.',
+    stack: 'PYTHON / MCP / PILLOW / BPY / SVG',
+    url: null,
+    github: null,
+  },
+  // 7 — Supporting: Petri Dish
   {
     id: 'petri-dish',
     name: 'Petri Dish',
     category: 'visualization',
-    description: 'Biological information runtime visualization. D3-force graph with electron animation, traversal replay, microscope lens, and comparison mode. Renders how information flows through living systems.',
+    short: 'Biological information runtime',
+    image: null,
+    description: 'D3-force graph with electron animation, traversal replay, microscope lens, and comparison mode. Renders how information flows through living systems.',
     stack: 'D3-FORCE / CANVAS 2D / CHUNKING PIPELINE',
     url: null,
-  },
-  {
-    id: 'session-pulser',
-    name: 'Session Pulser',
-    category: 'tool',
-    description: 'Real-time session analytics dashboard. Dense data visualization showing agent work patterns, memory access heat maps, and skill usage graphs. The engineering standard for tools and dashboards.',
-    stack: 'THREE.JS / CANVAS 2D / WEBSOCKET',
-    url: null,
-  },
-  {
-    id: 'style-dna',
-    name: 'Style DNA Extractor',
-    category: 'agentic',
-    description: 'Shader-based visual style extraction system. Analyzes reference images through a 10-phase pipeline to produce reproducible AI art generation parameters. Opus-powered extraction engine.',
-    stack: 'NUXT 4 / CLAUDE API / SUPABASE / VERCEL',
-    url: null,
-  },
-  {
-    id: 'skills-orchestrator',
-    name: 'Skills Orchestrator',
-    category: 'agentic',
-    description: '43-skill MCP server with dynamic loading, memory-augmented dispatch, and context tree CRUD. The nervous system behind every Claude Code session — skills match, load, execute, and self-improve.',
-    stack: 'MCP / PYTHON / SQLITE / YAML',
-    url: null,
-  },
-  {
-    id: 'cli-anything',
-    name: 'CLI-Anything',
-    category: 'agentic',
-    description: 'Turns GUI software into agent-controllable APIs. 22 MCP tools across GIMP, Blender, Inkscape, and Draw.io. YAML recipe system for reusable pipelines. The bridge between AI agents and desktop software.',
-    stack: 'PYTHON / MCP / PILLOW / BPY / SVG',
-    url: null,
-  },
-  {
-    id: 'memory-system',
-    name: 'Agent Memory System',
-    category: 'agentic',
-    description: 'Tiered persistent memory architecture with session journals, distilled memory (11x compression via arxiv:2603.13017), heuristic injection, and drift radar. The continuity layer across 40+ sessions.',
-    stack: 'OBSIDIAN / MCP / PYTHON / YAML',
-    url: null,
+    github: null,
   },
 ]
+
+const featuredProjects = computed(() =>
+  projects.slice(0, 4).map((p, i) => ({ ...p, _index: i }))
+)
+const supportingProjects = computed(() =>
+  projects.slice(4).map((p, i) => ({ ...p, _index: i + 4 }))
+)
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const loaderRef = ref<HTMLElement | null>(null)
