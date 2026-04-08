@@ -126,10 +126,24 @@ worksClose.addEventListener('click', () => worksOverlay.classList.remove('visibl
 btnContact.addEventListener('click', () => contactPopup.classList.add('visible'))
 contactClose.addEventListener('click', () => contactPopup.classList.remove('visible'))
 
-// --- Scene UI transitions ---
+// --- Scene UI transitions with GSAP text animation ---
 function showSceneUI(index) {
   sceneUIs.forEach((el, i) => {
-    el.classList.toggle('visible', i === index)
+    if (i === index) {
+      el.classList.add('visible')
+      // Animate text elements in
+      const textEls = el.querySelectorAll('.display, .skills p, .meta, .overline, .scroll-cta, .contact-links a, .featured-card, .supporting-item')
+      gsap.fromTo(textEls,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, stagger: 0.06, ease: 'power3.out', delay: 0.15 }
+      )
+    } else {
+      // Fade out previous scene
+      const textEls = el.querySelectorAll('.display, .skills p, .meta, .overline, .scroll-cta, .contact-links a')
+      gsap.to(textEls, { opacity: 0, y: -10, duration: 0.3, ease: 'power2.in',
+        onComplete: () => el.classList.remove('visible')
+      })
+    }
   })
 }
 

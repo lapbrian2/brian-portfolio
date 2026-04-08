@@ -79,6 +79,12 @@ body {
 .scene-ui.visible { opacity: 1; visibility: visible; }
 .scene-ui a, .scene-ui button { pointer-events: auto; }
 
+/* About scene: mix-blend-difference for text inversion against 3D */
+#scene-1-ui { mix-blend-mode: difference; }
+
+/* Agentic scene: subtle blend */
+#scene-3-ui { mix-blend-mode: difference; }
+
 .scene-ui--work {
   overflow-y: auto; overflow-x: hidden;
   padding-top: 6rem; padding-bottom: 2rem;
@@ -143,9 +149,12 @@ body {
   text-align: left; cursor: pointer;
   border: 1px solid rgba(255,255,255,0.04);
   background: rgba(255,255,255,0.01);
-  transition: opacity 0.3s;
+  transition: transform 0.4s ease, border-color 0.3s ease;
 }
-.featured-card:hover { opacity: 0.75; }
+.featured-card:hover {
+  border-color: rgba(74,158,173,0.15);
+  transform: translateY(-2px);
+}
 .featured-card__image {
   width: 100%; aspect-ratio: 16/9; overflow: hidden;
   background: rgba(255,255,255,0.02);
