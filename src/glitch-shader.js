@@ -56,8 +56,9 @@ export const GlitchShader = {
       float noise = random(vUv + time) * i * 0.15;
       color += noise;
 
-      // Slight green tint during glitch (VHS characteristic)
-      color.g += i * 0.03;
+      // Warm gold tint during glitch
+      color.r += i * 0.02;
+      color.g += i * 0.015;
 
       gl_FragColor = vec4(color, 1.0);
     }

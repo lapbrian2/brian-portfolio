@@ -1,6 +1,15 @@
 import * as THREE from 'three'
 
-// Shared utility: create particle dust field
+// Brian's palette as Three.js colors
+const INK = 0x09090B
+const GRAPHITE = 0x18181B
+const CARBON = 0x1C1C1E
+const GOLD = 0xB8964E
+const PEWTER = 0x71717A
+const GALLERY = 0xFAFAF9
+const LINEN = 0xF5F5F0
+
+// Shared: dust particles
 function createDust(scene, count, spread, color, size, opacity) {
   const pos = new Float32Array(count * 3)
   for (let i = 0; i < count; i++) {
@@ -10,125 +19,104 @@ function createDust(scene, count, spread, color, size, opacity) {
   }
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
-  const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({
     size, color, transparent: true, opacity,
     blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-  }))
-  scene.add(pts)
+  })))
   return geo
 }
 
-// Shared: 3-point lighting rig
-function addLightRig(scene, { key = 0x4a9ead, fill = 0x1a2a3a, ambient = 0x0a1a1a, keyIntensity = 1.2 } = {}) {
-  scene.add(new THREE.AmbientLight(ambient, 0.5))
-  const keyLight = new THREE.DirectionalLight(key, keyIntensity)
-  keyLight.position.set(8, 12, 6)
-  scene.add(keyLight)
-  const fillLight = new THREE.DirectionalLight(fill, 0.4)
-  fillLight.position.set(-5, 3, -4)
-  scene.add(fillLight)
-  const rimLight = new THREE.DirectionalLight(0xffffff, 0.15)
-  rimLight.position.set(0, 5, -10)
-  scene.add(rimLight)
+// Shared: editorial lighting rig — warm key, cool fill, subtle rim
+function addLightRig(scene) {
+  scene.add(new THREE.AmbientLight(0x111111, 0.4))
+  const key = new THREE.DirectionalLight(0xFFF5E6, 0.9) // warm white
+  key.position.set(8, 12, 6)
+  scene.add(key)
+  const fill = new THREE.DirectionalLight(0xE0E0E0, 0.3)
+  fill.position.set(-5, 3, -4)
+  scene.add(fill)
+  const rim = new THREE.DirectionalLight(0xFFFFFF, 0.1)
+  rim.position.set(0, 5, -10)
+  scene.add(rim)
 }
 
 /**
- * Scene 0 — Hero: Dark cyberpunk architecture
- * Grid floor, tall columns with emissive edges, floating firefly particles
+ * Scene 0 — Hero: Editorial grid space
+ * Clean vertical planes in graphite, thin gold accent lines, minimal dust
  */
 export function createHeroScene() {
   return {
-    fog: new THREE.FogExp2(0x07161a, 0.014),
+    fog: new THREE.FogExp2(INK, 0.012),
     cameraPath: {
-      from: { x: 0, y: 5, z: 22, lookY: 3 },
-      to: { x: 4, y: 2, z: 10, lookY: 0 },
+      from: { x: 0, y: 4, z: 22, lookY: 2 },
+      to: { x: 3, y: 1.5, z: 12, lookY: 0 },
     },
     setup(scene, camera) {
-      camera.position.set(0, 5, 22)
-      camera.lookAt(0, 3, 0)
+      camera.position.set(0, 4, 22)
+      camera.lookAt(0, 2, 0)
+      scene.background = new THREE.Color(INK)
       addLightRig(scene)
 
-      // Point lights for atmosphere
-      const p1 = new THREE.PointLight(0x4a9ead, 0.8, 25)
-      p1.position.set(-8, 8, -5)
-      scene.add(p1)
-      const p2 = new THREE.PointLight(0x2a6a7a, 0.5, 20)
-      p2.position.set(10, 3, 0)
-      scene.add(p2)
+      // Subtle gold point light
+      const goldLight = new THREE.PointLight(GOLD, 0.3, 30)
+      goldLight.position.set(-5, 8, 0)
+      scene.add(goldLight)
 
-      // Grid floor
+      // Grid floor — very subtle
       const gridGeo = new THREE.BufferGeometry()
       const gp = []
-      for (let x = -50; x <= 50; x += 2) gp.push(x, 0, -50, x, 0, 50)
-      for (let z = -50; z <= 50; z += 2) gp.push(-50, 0, z, 50, 0, z)
+      for (let x = -40; x <= 40; x += 3) gp.push(x, 0, -40, x, 0, 40)
+      for (let z = -40; z <= 40; z += 3) gp.push(-40, 0, z, 40, 0, z)
       gridGeo.setAttribute('position', new THREE.Float32BufferAttribute(gp, 3))
       scene.add(new THREE.LineSegments(gridGeo, new THREE.LineBasicMaterial({
-        color: 0x1a4a4a, transparent: true, opacity: 0.12,
+        color: GRAPHITE, transparent: true, opacity: 0.08,
       })))
 
-      // Architectural columns with varying materials
-      const colMats = [
-        new THREE.MeshStandardMaterial({ color: 0x0d2b2b, roughness: 0.7, metalness: 0.3 }),
-        new THREE.MeshStandardMaterial({ color: 0x0a2020, roughness: 0.9, metalness: 0.1 }),
-        new THREE.MeshStandardMaterial({ color: 0x112828, roughness: 0.5, metalness: 0.5 }),
-      ]
-      const columns = []
-      for (let i = 0; i < 30; i++) {
-        const h = 5 + Math.random() * 18
-        const w = 0.2 + Math.random() * 1.2
-        const d = 0.2 + Math.random() * 0.6
-        const col = new THREE.Mesh(
-          new THREE.BoxGeometry(w, h, d),
-          colMats[i % 3],
+      // Vertical planes — editorial columns (flat, not boxes)
+      const planeMat = new THREE.MeshStandardMaterial({
+        color: GRAPHITE, roughness: 0.9, metalness: 0.05,
+        side: THREE.DoubleSide,
+      })
+      const planes = []
+      for (let i = 0; i < 18; i++) {
+        const h = 6 + Math.random() * 16
+        const w = 0.6 + Math.random() * 2
+        const plane = new THREE.Mesh(
+          new THREE.PlaneGeometry(w, h),
+          planeMat,
         )
-        col.position.set(
-          (Math.random() - 0.5) * 40,
+        plane.position.set(
+          (Math.random() - 0.5) * 35,
           h / 2,
-          (Math.random() - 0.5) * 40 - 8,
+          (Math.random() - 0.5) * 35 - 8,
         )
-        scene.add(col)
-        columns.push(col)
-
-        // Emissive edge lines on some columns
-        if (Math.random() > 0.5) {
-          const edges = new THREE.LineSegments(
-            new THREE.EdgesGeometry(col.geometry),
-            new THREE.LineBasicMaterial({ color: 0x4a9ead, transparent: true, opacity: 0.08 })
-          )
-          edges.position.copy(col.position)
-          scene.add(edges)
-        }
+        plane.rotation.y = Math.random() * Math.PI
+        scene.add(plane)
+        planes.push(plane)
       }
 
-      // Horizontal beams connecting some columns
-      for (let i = 0; i < 8; i++) {
-        const a = columns[Math.floor(Math.random() * columns.length)]
-        const b = columns[Math.floor(Math.random() * columns.length)]
-        if (a === b) continue
-        const beamH = 3 + Math.random() * 10
-        const beam = new THREE.Mesh(
-          new THREE.BoxGeometry(0.08, 0.08, a.position.distanceTo(b.position)),
-          new THREE.MeshBasicMaterial({ color: 0x1a3a3a, transparent: true, opacity: 0.3 })
-        )
-        beam.position.lerpVectors(a.position, b.position, 0.5)
-        beam.position.y = beamH
-        beam.lookAt(b.position.x, beamH, b.position.z)
-        scene.add(beam)
+      // Thin gold accent lines — horizontal, sparse
+      const goldMat = new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.12 })
+      for (let i = 0; i < 5; i++) {
+        const lineGeo = new THREE.BufferGeometry()
+        const y = 3 + Math.random() * 10
+        const x1 = (Math.random() - 0.5) * 20
+        const x2 = x1 + 5 + Math.random() * 15
+        const z = (Math.random() - 0.5) * 20
+        lineGeo.setAttribute('position', new THREE.Float32BufferAttribute([x1, y, z, x2, y, z], 3))
+        scene.add(new THREE.Line(lineGeo, goldMat))
       }
 
-      // Firefly particles
-      const dustGeo = createDust(scene, 500, 50, 0x4a9ead, 0.06, 0.5)
+      // Minimal dust
+      const dustGeo = createDust(scene, 200, 50, PEWTER, 0.04, 0.2)
       scene.userData.particles = dustGeo
-      scene.userData.columns = columns
     },
     update(dt, elapsed) {
-      // Drift particles upward
       const pos = this.threeScene.userData.particles?.attributes.position
       if (!pos) return
       for (let i = 0; i < pos.count; i++) {
-        pos.array[i * 3 + 1] += dt * 0.12
-        pos.array[i * 3] += Math.sin(elapsed * 0.5 + i) * dt * 0.02
-        if (pos.array[i * 3 + 1] > 20) pos.array[i * 3 + 1] = -5
+        pos.array[i * 3 + 1] += dt * 0.06
+        if (pos.array[i * 3 + 1] > 18) pos.array[i * 3 + 1] = -3
       }
       pos.needsUpdate = true
     },
@@ -136,214 +124,201 @@ export function createHeroScene() {
 }
 
 /**
- * Scene 1 — About: Floating monoliths in deep void
- * Dark blocks hovering with teal edge glow, volumetric dust
+ * Scene 1 — About: Floating rectangular volumes
+ * Clean dark boxes hovering in void, thin gold edge accents on select pieces
  */
 export function createAboutScene() {
   return {
-    fog: new THREE.FogExp2(0x040d10, 0.016),
+    fog: new THREE.FogExp2(INK, 0.015),
     cameraPath: {
       from: { x: 0, y: 0, z: 16, lookY: 0 },
-      to: { x: -4, y: 3, z: 8, lookY: 1 },
+      to: { x: -3, y: 2, z: 9, lookY: 1 },
     },
     setup(scene, camera) {
       camera.position.set(0, 0, 16)
+      scene.background = new THREE.Color(INK)
+      addLightRig(scene)
 
-      addLightRig(scene, { ambient: 0x050a0a, keyIntensity: 0.8 })
+      const goldGlow = new THREE.PointLight(GOLD, 0.4, 20)
+      goldGlow.position.set(3, 5, 3)
+      scene.add(goldGlow)
 
-      // Cyan point light for glow
-      const glow = new THREE.PointLight(0x4a9ead, 1.5, 25)
-      glow.position.set(2, 6, 3)
-      scene.add(glow)
-      const glow2 = new THREE.PointLight(0x2a5a6a, 0.8, 20)
-      glow2.position.set(-5, -2, -5)
-      scene.add(glow2)
-
-      // Monoliths
       const mat = new THREE.MeshStandardMaterial({
-        color: 0x0a1a1f, roughness: 0.5, metalness: 0.5,
-        envMapIntensity: 0.3,
+        color: CARBON, roughness: 0.85, metalness: 0.1,
       })
       const blocks = []
-      for (let i = 0; i < 15; i++) {
-        const w = 0.4 + Math.random() * 2.5
-        const h = 2 + Math.random() * 8
-        const d = 0.4 + Math.random() * 2
+      for (let i = 0; i < 12; i++) {
+        const w = 0.5 + Math.random() * 2.5
+        const h = 1.5 + Math.random() * 6
+        const d = 0.3 + Math.random() * 1.5
         const block = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat)
         block.position.set(
-          (Math.random() - 0.5) * 22,
+          (Math.random() - 0.5) * 20,
           (Math.random() - 0.5) * 10,
-          (Math.random() - 0.5) * 18,
+          (Math.random() - 0.5) * 16,
         )
         block.rotation.set(
-          (Math.random() - 0.5) * 0.15,
-          Math.random() * Math.PI,
           (Math.random() - 0.5) * 0.1,
+          Math.random() * Math.PI,
+          (Math.random() - 0.5) * 0.05,
         )
         scene.add(block)
         blocks.push(block)
 
-        // Teal edge wireframe on every block
-        const edges = new THREE.LineSegments(
-          new THREE.EdgesGeometry(block.geometry),
-          new THREE.LineBasicMaterial({ color: 0x4a9ead, transparent: true, opacity: 0.06 + Math.random() * 0.08 })
-        )
-        edges.position.copy(block.position)
-        edges.rotation.copy(block.rotation)
-        edges.scale.multiplyScalar(1.01)
-        scene.add(edges)
+        // Gold edge accent on ~30% of blocks
+        if (Math.random() > 0.7) {
+          const edges = new THREE.LineSegments(
+            new THREE.EdgesGeometry(block.geometry),
+            new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.08 })
+          )
+          edges.position.copy(block.position)
+          edges.rotation.copy(block.rotation)
+          edges.scale.multiplyScalar(1.005)
+          scene.add(edges)
+        }
       }
 
-      createDust(scene, 400, 30, 0x3a8a9a, 0.04, 0.3)
+      createDust(scene, 150, 25, PEWTER, 0.03, 0.15)
       scene.userData.blocks = blocks
     },
     update(dt, elapsed) {
       const bks = this.threeScene.userData.blocks
       if (!bks) return
       bks.forEach((b, i) => {
-        b.position.y += Math.sin(elapsed * 0.25 + i * 0.8) * dt * 0.08
-        b.rotation.y += dt * 0.005
+        b.position.y += Math.sin(elapsed * 0.2 + i * 0.7) * dt * 0.04
       })
     },
   }
 }
 
 /**
- * Scene 2 — Work: Rotating glass polyhedron
- * Refracted icosahedron with inner glow, orbiting particles
+ * Scene 2 — Work: Rotating octahedron with gold wireframe
+ * Clean geometric form, institutional feel
  */
 export function createWorkScene() {
   return {
-    fog: new THREE.FogExp2(0x07161a, 0.012),
+    fog: new THREE.FogExp2(INK, 0.01),
     cameraPath: {
       from: { x: 0, y: 0, z: 14 },
-      to: { x: 3, y: 1, z: 9 },
+      to: { x: 2, y: 1, z: 10 },
     },
     setup(scene, camera) {
       camera.position.set(0, 0, 14)
+      scene.background = new THREE.Color(INK)
+      addLightRig(scene)
 
-      addLightRig(scene, { keyIntensity: 1.0 })
-      const inner = new THREE.PointLight(0x4a9ead, 2, 8)
-      inner.position.set(0, 0, 0)
-      scene.add(inner)
+      const goldInner = new THREE.PointLight(GOLD, 0.6, 10)
+      goldInner.position.set(0, 0, 0)
+      scene.add(goldInner)
 
-      // Glass icosahedron
-      const ico = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(3, 2),
-        new THREE.MeshPhysicalMaterial({
-          color: 0x1a3a3a, roughness: 0.05, metalness: 0.2,
-          transmission: 0.7, thickness: 2, transparent: true, opacity: 0.6,
-          ior: 1.5, envMapIntensity: 0.5,
+      // Main form — octahedron
+      const octa = new THREE.Mesh(
+        new THREE.OctahedronGeometry(3, 0),
+        new THREE.MeshStandardMaterial({
+          color: GRAPHITE, roughness: 0.7, metalness: 0.2,
+          transparent: true, opacity: 0.8,
         }),
       )
-      scene.add(ico)
+      scene.add(octa)
 
-      // Wireframe shell
-      const wire = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(3.08, 2),
-        new THREE.MeshBasicMaterial({ color: 0x4a9ead, wireframe: true, transparent: true, opacity: 0.1 })
+      // Gold wireframe shell
+      const wire = new THREE.LineSegments(
+        new THREE.EdgesGeometry(new THREE.OctahedronGeometry(3.05, 0)),
+        new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.2 })
       )
       scene.add(wire)
 
-      // Inner wireframe (smaller, brighter)
-      const innerWire = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(2.2, 1),
-        new THREE.MeshBasicMaterial({ color: 0x6abccc, wireframe: true, transparent: true, opacity: 0.06 })
+      // Inner form — smaller, rotated
+      const inner = new THREE.Mesh(
+        new THREE.OctahedronGeometry(1.8, 0),
+        new THREE.MeshStandardMaterial({
+          color: CARBON, roughness: 0.5, metalness: 0.3,
+        }),
       )
+      inner.rotation.set(Math.PI / 4, 0, Math.PI / 4)
+      scene.add(inner)
+
+      const innerWire = new THREE.LineSegments(
+        new THREE.EdgesGeometry(new THREE.OctahedronGeometry(1.85, 0)),
+        new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.1 })
+      )
+      innerWire.rotation.copy(inner.rotation)
       scene.add(innerWire)
 
-      // Orbiting particles ring
-      const ringCount = 200
-      const ringPos = new Float32Array(ringCount * 3)
-      for (let i = 0; i < ringCount; i++) {
-        const angle = (i / ringCount) * Math.PI * 2
-        const r = 4.5 + (Math.random() - 0.5) * 1.5
-        ringPos[i * 3] = Math.cos(angle) * r
-        ringPos[i * 3 + 1] = (Math.random() - 0.5) * 1.5
-        ringPos[i * 3 + 2] = Math.sin(angle) * r
-      }
-      const ringGeo = new THREE.BufferGeometry()
-      ringGeo.setAttribute('position', new THREE.BufferAttribute(ringPos, 3))
-      const ring = new THREE.Points(ringGeo, new THREE.PointsMaterial({
-        size: 0.04, color: 0x4a9ead, transparent: true, opacity: 0.5,
-        blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-      }))
-      scene.add(ring)
-
-      createDust(scene, 200, 30, 0x2a5a6a, 0.03, 0.2)
-      scene.userData.ico = ico
+      createDust(scene, 100, 25, PEWTER, 0.03, 0.12)
+      scene.userData.octa = octa
       scene.userData.wire = wire
+      scene.userData.inner = inner
       scene.userData.innerWire = innerWire
-      scene.userData.ring = ring
     },
     update(dt, elapsed) {
-      const { ico, wire, innerWire, ring } = this.threeScene.userData
-      if (ico) {
-        ico.rotation.y = elapsed * 0.12
-        ico.rotation.x = Math.sin(elapsed * 0.08) * 0.15
+      const { octa, wire, inner, innerWire } = this.threeScene.userData
+      if (octa) {
+        octa.rotation.y = elapsed * 0.08
+        octa.rotation.x = Math.sin(elapsed * 0.06) * 0.1
       }
       if (wire) {
-        wire.rotation.y = elapsed * 0.12
-        wire.rotation.x = Math.sin(elapsed * 0.08) * 0.15
+        wire.rotation.y = elapsed * 0.08
+        wire.rotation.x = Math.sin(elapsed * 0.06) * 0.1
+      }
+      if (inner) {
+        inner.rotation.y = -elapsed * 0.12
       }
       if (innerWire) {
-        innerWire.rotation.y = -elapsed * 0.2
-        innerWire.rotation.z = elapsed * 0.1
+        innerWire.rotation.y = -elapsed * 0.12
       }
-      if (ring) ring.rotation.y = elapsed * 0.05
     },
   }
 }
 
 /**
- * Scene 3 — Agentic: Neural network
- * Nodes with pulsing glow, connections, data flow particles along edges
+ * Scene 3 — Agentic: Constellation network
+ * Nodes connected by thin lines, gold highlights on hub nodes
  */
 export function createAgenticScene() {
   return {
-    fog: new THREE.FogExp2(0x07161a, 0.01),
+    fog: new THREE.FogExp2(INK, 0.008),
     cameraPath: {
       from: { x: 0, y: 2, z: 22 },
-      to: { x: 6, y: 4, z: 14, lookY: 2 },
+      to: { x: 5, y: 3, z: 14, lookY: 1 },
     },
     setup(scene, camera) {
       camera.position.set(0, 2, 22)
+      scene.background = new THREE.Color(INK)
+      addLightRig(scene)
 
-      addLightRig(scene, { ambient: 0x080808, keyIntensity: 0.6 })
-      scene.add(new THREE.PointLight(0x4a9ead, 1, 35))
+      const goldLight = new THREE.PointLight(GOLD, 0.5, 30)
+      goldLight.position.set(0, 5, 0)
+      scene.add(goldLight)
 
       // Nodes
       const nodes = []
-      for (let i = 0; i < 50; i++) {
-        const s = 0.08 + Math.random() * 0.18
+      for (let i = 0; i < 45; i++) {
+        const isHub = Math.random() > 0.8
+        const s = isHub ? 0.15 + Math.random() * 0.1 : 0.05 + Math.random() * 0.08
         const node = new THREE.Mesh(
           new THREE.SphereGeometry(s, 8, 8),
-          new THREE.MeshBasicMaterial({ color: 0x4a9ead, transparent: true, opacity: 0.5 })
+          new THREE.MeshBasicMaterial({
+            color: isHub ? GOLD : PEWTER,
+            transparent: true,
+            opacity: isHub ? 0.7 : 0.35,
+          })
         )
         node.position.set(
-          (Math.random() - 0.5) * 30,
-          (Math.random() - 0.5) * 20,
-          (Math.random() - 0.5) * 30,
+          (Math.random() - 0.5) * 28,
+          (Math.random() - 0.5) * 18,
+          (Math.random() - 0.5) * 28,
         )
+        node.userData.isHub = isHub
         scene.add(node)
         nodes.push(node)
-
-        // Glow halo around larger nodes
-        if (s > 0.15) {
-          const halo = new THREE.Mesh(
-            new THREE.SphereGeometry(s * 3, 8, 8),
-            new THREE.MeshBasicMaterial({ color: 0x4a9ead, transparent: true, opacity: 0.02 })
-          )
-          halo.position.copy(node.position)
-          scene.add(halo)
-        }
       }
 
-      // Connections
+      // Connections — thin pewter lines
       const linePos = []
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          if (nodes[i].position.distanceTo(nodes[j].position) < 10) {
+          if (nodes[i].position.distanceTo(nodes[j].position) < 9) {
             linePos.push(
               nodes[i].position.x, nodes[i].position.y, nodes[i].position.z,
               nodes[j].position.x, nodes[j].position.y, nodes[j].position.z,
@@ -354,64 +329,52 @@ export function createAgenticScene() {
       const lineGeo = new THREE.BufferGeometry()
       lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3))
       scene.add(new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
-        color: 0x4a9ead, transparent: true, opacity: 0.04,
+        color: PEWTER, transparent: true, opacity: 0.03,
       })))
 
-      createDust(scene, 300, 40, 0x3a7a8a, 0.03, 0.25)
+      createDust(scene, 150, 35, PEWTER, 0.02, 0.1)
       scene.userData.nodes = nodes
     },
     update(dt, elapsed) {
       const nodes = this.threeScene.userData.nodes
       if (!nodes) return
       nodes.forEach((n, i) => {
-        n.material.opacity = 0.25 + Math.sin(elapsed * 0.4 + i * 0.6) * 0.3
+        const base = n.userData.isHub ? 0.5 : 0.2
+        n.material.opacity = base + Math.sin(elapsed * 0.35 + i * 0.5) * 0.2
       })
     },
   }
 }
 
 /**
- * Scene 4 — Footer: Minimal ring + dust
+ * Scene 4 — Footer: Single gold ring
  */
 export function createFooterScene() {
   return {
-    fog: new THREE.FogExp2(0x07161a, 0.02),
+    fog: new THREE.FogExp2(INK, 0.02),
     cameraPath: {
-      from: { x: 0, y: 0, z: 12 },
-      to: { x: 0, y: 2, z: 8 },
+      from: { x: 0, y: 0, z: 10 },
+      to: { x: 0, y: 1, z: 7 },
     },
     setup(scene, camera) {
-      camera.position.set(0, 0, 12)
+      camera.position.set(0, 0, 10)
+      scene.background = new THREE.Color(INK)
       scene.add(new THREE.AmbientLight(0x0a0a0a, 0.3))
-      scene.add(new THREE.PointLight(0x4a9ead, 0.5, 15))
 
-      // Two concentric rings
-      const ring1 = new THREE.Mesh(
-        new THREE.TorusGeometry(3, 0.015, 16, 80),
-        new THREE.MeshBasicMaterial({ color: 0x4a9ead, transparent: true, opacity: 0.12 }),
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(2.5, 0.01, 16, 80),
+        new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.15 })
       )
-      scene.add(ring1)
+      scene.add(ring)
 
-      const ring2 = new THREE.Mesh(
-        new THREE.TorusGeometry(2, 0.01, 16, 60),
-        new THREE.MeshBasicMaterial({ color: 0x3a6a7a, transparent: true, opacity: 0.08 }),
-      )
-      ring2.rotation.x = Math.PI * 0.5
-      scene.add(ring2)
-
-      createDust(scene, 100, 20, 0x3a7a8a, 0.03, 0.15)
-      scene.userData.ring1 = ring1
-      scene.userData.ring2 = ring2
+      createDust(scene, 50, 15, PEWTER, 0.02, 0.08)
+      scene.userData.ring = ring
     },
     update(dt, elapsed) {
-      const { ring1, ring2 } = this.threeScene.userData
-      if (ring1) {
-        ring1.rotation.x = elapsed * 0.08
-        ring1.rotation.y = elapsed * 0.12
-      }
-      if (ring2) {
-        ring2.rotation.y = -elapsed * 0.1
-        ring2.rotation.z = elapsed * 0.06
+      const r = this.threeScene.userData.ring
+      if (r) {
+        r.rotation.x = elapsed * 0.06
+        r.rotation.y = elapsed * 0.09
       }
     },
   }

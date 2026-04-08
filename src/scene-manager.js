@@ -62,7 +62,7 @@ export class SceneManager {
   /** Register a scene config: { setup(scene, camera), update(dt, elapsed), cameraPos } */
   addScene(config) {
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0x07161a)
+    scene.background = new THREE.Color(0x09090B)
     if (config.fog) scene.fog = config.fog
     config.setup(scene, this.camera)
     this.scenes.push({ ...config, threeScene: scene })
