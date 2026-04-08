@@ -2,7 +2,10 @@
   <div>
     <!-- Loader -->
     <div ref="loaderRef" class="loader">
-      <p class="loader__text">Loading experience</p>
+      <div class="loader__row">
+        <span class="loader__wait">[Please wait]</span>
+        <span class="loader__label">Loading experience</span>
+      </div>
       <div class="loader__bar">
         <div ref="loaderFillRef" class="loader__fill" />
       </div>
@@ -10,83 +13,116 @@
 
     <!-- Nav -->
     <nav ref="navRef" class="nav">
-      <span class="nav__name">Brian Lapinski</span>
-      <a href="mailto:hello@brianlapinski.com" class="nav__contact">Contact</a>
+      <span class="nav__name" data-scramble>Brian Lapinski</span>
+      <button class="nav__contact" data-scramble @click="showContact = true">
+        Click to contact
+      </button>
     </nav>
 
     <!-- WebGL Canvas -->
-    <canvas ref="canvasRef" class="webgl-canvas" />
+    <ClientOnly>
+      <canvas ref="canvasRef" class="webgl-canvas" />
+    </ClientOnly>
 
-    <!-- Scroll Progress -->
+    <!-- Progress Bar -->
     <div class="progress-track">
       <div ref="progressRef" class="progress-fill" />
     </div>
 
-    <!-- Scroll Content -->
-    <div id="scroll-wrap" class="scroll-container">
+    <!-- UI Layer — all scenes stacked, fixed -->
+    <div class="ui-layer">
 
       <!-- Scene 0: Hero -->
-      <section class="scene scene--hero">
-        <div>
-          <h1 class="display display--lg fade-up">
+      <section
+        :class="['scene-ui', { visible: currentScene === 0 }]"
+      >
+        <div class="scene-ui__top">
+          <h1 class="display display--lg flicker">
             <span class="dim">Building</span> immersive<br>
             digital <span class="dim">experiences ―</span>
           </h1>
-          <p class="display fade-up" style="margin-top: 0.25em;">
+          <p class="display flicker" style="margin-top: 0.25em;">
             <span class="dim">Creative</span> development<br>
             <span class="dim">&amp;</span> WebGL engineering
           </p>
         </div>
-        <div class="scroll-cta fade-up">
-          <span>[Scroll]</span> to explore
+        <div class="scene-ui__bottom">
+          <p class="scroll-cta flicker">
+            <span>[Scroll]</span> to explore
+          </p>
         </div>
       </section>
 
       <!-- Scene 1: About -->
-      <section class="scene scene--center">
-        <h2 class="display fade-up">
-          Creative <span class="dim">Web</span> Developer
-        </h2>
-        <div class="skills" style="margin-top: 1.5rem;">
-          <p class="skills__item fade-up">
-            WebGL &amp; Three.js, <span class="dim">GSAP Animations,</span>
-          </p>
-          <p class="skills__item fade-up">
-            <span class="dim">AI Systems Integration,</span>
-          </p>
-          <p class="skills__item fade-up">
-            Interactive Experiences <span class="dim">&amp; Beyond.</span>
-          </p>
-        </div>
-        <div class="meta fade-up" style="margin-top: 2rem;">
-          <span>Microsoft / Amazon / Aya Healthcare</span><br>
-          <span>/// Independent Creative Developer</span>
+      <section
+        :class="['scene-ui', { visible: currentScene === 1 }]"
+      >
+        <div class="scene-ui__full">
+          <h2 class="display flicker">
+            Creative <span class="dim">Web</span> Developer
+          </h2>
+          <div class="skills">
+            <p class="skills__item">
+              WebGL &amp; Three.js, <span class="dim">GSAP Animations,</span>
+            </p>
+            <p class="skills__item">
+              <span class="dim">AI Systems Integration,</span>
+            </p>
+            <p class="skills__item">
+              Interactive Experiences <span class="dim">&amp; Beyond.</span>
+            </p>
+          </div>
+          <div class="meta" style="margin-top: 2rem;">
+            <span>Microsoft / Amazon / Aya Healthcare</span><br>
+            <span>/// Independent Creative Developer</span>
+          </div>
         </div>
       </section>
 
       <!-- Scene 2: Work -->
-      <section class="scene">
-        <h2 class="overline fade-up">Featured Work &amp; Projects</h2>
-        <div class="work-stats" style="margin-top: 1rem;">
-          <p class="meta fade-up">Shipping worldwide since 2018</p>
-          <p class="meta fade-up">Enterprise + independent builds</p>
+      <section
+        :class="['scene-ui', { visible: currentScene === 2 }]"
+      >
+        <div class="scene-ui__bottom-left">
+          <h2 class="overline flicker">Featured Work &amp; Projects</h2>
+          <div class="work-stats">
+            <p class="meta">Shipping worldwide since 2018</p>
+            <p class="meta">Enterprise + independent builds</p>
+          </div>
         </div>
       </section>
 
-      <!-- Scene 3: Spacer for 3D transition -->
-      <section class="scene" style="min-height: 80vh;" />
+      <!-- Scene 3: Transition / Spacer -->
+      <section
+        :class="['scene-ui', { visible: currentScene === 3 }]"
+      />
 
       <!-- Scene 4: Contact / Footer -->
-      <section class="scene">
-        <ul class="contact-links">
-          <li><a href="mailto:hello@brianlapinski.com" class="fade-up" target="_blank">Email</a></li>
-          <li><a href="https://www.linkedin.com/in/brian-lapinski/" class="fade-up" target="_blank">LinkedIn</a></li>
-          <li><a href="https://github.com/lapbrian2" class="fade-up" target="_blank">GitHub</a></li>
-        </ul>
-        <p class="meta fade-up" style="margin-top: 3rem;">
-          Thanks for visiting
-        </p>
+      <section
+        :class="['scene-ui', { visible: currentScene === 4 }]"
+      >
+        <div class="scene-ui__footer">
+          <ul class="contact-links">
+            <li><a href="mailto:hello@brianlapinski.com" data-scramble target="_blank">Email</a></li>
+            <li><a href="https://www.linkedin.com/in/brian-lapinski/" data-scramble target="_blank">LinkedIn</a></li>
+            <li><a href="https://github.com/lapbrian2" data-scramble target="_blank">GitHub</a></li>
+          </ul>
+          <p class="meta" style="margin-top: 3rem;">
+            <span>Thanks for visiting</span><br>
+            <span>Development &amp; design by Brian Lapinski</span>
+          </p>
+        </div>
       </section>
+    </div>
+
+    <!-- Contact Popup -->
+    <div :class="['contact-popup', { visible: showContact }]">
+      <button class="contact-popup__close" data-scramble @click="showContact = false">Close</button>
+      <ul class="contact-popup__links">
+        <li><a href="mailto:hello@brianlapinski.com" data-scramble target="_blank">Email</a></li>
+        <li><a href="https://www.linkedin.com/in/brian-lapinski/" data-scramble target="_blank">LinkedIn</a></li>
+        <li><a href="https://github.com/lapbrian2" data-scramble target="_blank">GitHub</a></li>
+      </ul>
     </div>
 
     <!-- Copyright -->
@@ -99,38 +135,37 @@
 <script setup lang="ts">
 import * as THREE from 'three'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const loaderRef = ref<HTMLElement | null>(null)
 const loaderFillRef = ref<HTMLElement | null>(null)
 const navRef = ref<HTMLElement | null>(null)
 const progressRef = ref<HTMLElement | null>(null)
+const showContact = ref(false)
 
+const TOTAL_SCENES = 5
+const { progress, currentScene, start: startScroll, destroy: destroyScroll } = useVirtualScroll(TOTAL_SCENES)
 const { init, render, resize, dispose, getScene, getCamera } = useThreeScene(canvasRef)
+const { bindAll } = useTextScramble()
 
-// Proxy object for GSAP → Three.js bridge
-const proxy = reactive({
-  cameraZ: 30,
-  cameraY: 0,
-  fogNear: 40,
-  fogFar: 80,
-  particleSpread: 1,
-})
+// --- Three.js scene objects ---
+let particles: { points: THREE.Points; positions: Float32Array; velocities: number[]; geometry: THREE.BufferGeometry }
+let wireframes: { group: THREE.Group; ico: THREE.Mesh; torus: THREE.Mesh; octa: THREE.Mesh }
+let animationId: number
 
 function createParticleField(scene: THREE.Scene) {
-  const count = 600
+  const count = 800
   const positions = new Float32Array(count * 3)
   const velocities: number[] = []
 
   for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 60
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 60
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 60
+    positions[i * 3] = (Math.random() - 0.5) * 80
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 80
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 80
     velocities.push(
-      (Math.random() - 0.5) * 0.002,
-      (Math.random() - 0.5) * 0.002,
-      (Math.random() - 0.5) * 0.002,
+      (Math.random() - 0.5) * 0.003,
+      (Math.random() - 0.5) * 0.003,
+      (Math.random() - 0.5) * 0.003,
     )
   }
 
@@ -138,10 +173,10 @@ function createParticleField(scene: THREE.Scene) {
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
 
   const material = new THREE.PointsMaterial({
-    size: 0.08,
+    size: 0.15,
     color: 0xffffff,
     transparent: true,
-    opacity: 0.6,
+    opacity: 0.7,
     sizeAttenuation: true,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
@@ -149,163 +184,128 @@ function createParticleField(scene: THREE.Scene) {
 
   const points = new THREE.Points(geometry, material)
   scene.add(points)
-
   return { points, positions, velocities, geometry }
 }
 
 function createWireframeStructures(scene: THREE.Scene) {
   const group = new THREE.Group()
-  const material = new THREE.MeshBasicMaterial({
+  const mat = (opacity: number) => new THREE.MeshBasicMaterial({
     color: 0xffffff,
     wireframe: true,
     transparent: true,
-    opacity: 0.06,
+    opacity,
   })
 
-  // Large icosahedron
-  const ico = new THREE.Mesh(
-    new THREE.IcosahedronGeometry(8, 1),
-    material,
-  )
-  ico.position.set(12, -5, -15)
+  const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(10, 1), mat(0.04))
+  ico.position.set(15, -8, -20)
   group.add(ico)
 
-  // Torus
-  const torus = new THREE.Mesh(
-    new THREE.TorusGeometry(5, 0.3, 8, 32),
-    material.clone(),
-  )
-  torus.material.opacity = 0.04
-  torus.position.set(-15, 8, -20)
+  const torus = new THREE.Mesh(new THREE.TorusGeometry(6, 0.2, 8, 40), mat(0.03))
+  torus.position.set(-18, 10, -25)
   torus.rotation.x = Math.PI * 0.3
   group.add(torus)
 
-  // Octahedron
-  const octa = new THREE.Mesh(
-    new THREE.OctahedronGeometry(4, 0),
-    material.clone(),
-  )
-  octa.material.opacity = 0.05
-  octa.position.set(-8, -12, -10)
+  const octa = new THREE.Mesh(new THREE.OctahedronGeometry(5, 0), mat(0.035))
+  octa.position.set(-10, -15, -12)
   group.add(octa)
 
   scene.add(group)
   return { group, ico, torus, octa }
 }
 
-function buildScrollTimeline(camera: THREE.PerspectiveCamera) {
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: '#scroll-wrap',
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: 1.5,
-      onUpdate: (self) => {
-        // Apply proxy values to Three.js
-        camera.position.z = proxy.cameraZ
-        camera.position.y = proxy.cameraY
-        render()
+// Camera path driven by virtual scroll progress
+function updateCamera(camera: THREE.PerspectiveCamera, p: number) {
+  // 5 keyframes mapped to progress 0→1
+  const keyframes = [
+    { z: 35, y: 0, x: 0 },    // scene 0: pulled back
+    { z: 18, y: 3, x: 2 },    // scene 1: closer, slight offset
+    { z: 8, y: 0, x: -3 },    // scene 2: intimate
+    { z: 4, y: -2, x: 0 },    // scene 3: deep in
+    { z: 20, y: 8, x: 5 },    // scene 4: pulled back high
+  ]
 
-        // Update progress bar
-        if (progressRef.value) {
-          progressRef.value.style.height = `${self.progress * 100}%`
-        }
-      },
-    },
-  })
+  const segment = p * (keyframes.length - 1)
+  const i = Math.min(Math.floor(segment), keyframes.length - 2)
+  const t = segment - i
+  const ease = t * t * (3 - 2 * t) // smoothstep
 
-  // Camera moves through the particle field
-  tl.to(proxy, { cameraZ: 20, cameraY: 2, duration: 1 }, 0)
-  tl.to(proxy, { cameraZ: 10, cameraY: 0, duration: 1 }, 1)
-  tl.to(proxy, { cameraZ: 5, cameraY: -2, duration: 1 }, 2)
-  tl.to(proxy, { cameraZ: 15, cameraY: 5, duration: 1 }, 3)
+  const from = keyframes[i]
+  const to = keyframes[i + 1]
+
+  camera.position.x = from.x + (to.x - from.x) * ease
+  camera.position.y = from.y + (to.y - from.y) * ease
+  camera.position.z = from.z + (to.z - from.z) * ease
+  camera.lookAt(0, 0, 0)
 }
 
-function animateEntrances() {
-  const elements = document.querySelectorAll('.fade-up')
-  elements.forEach((el) => {
-    gsap.to(el, {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 85%',
-        toggleActions: 'play none none none',
-      },
-    })
-  })
-}
-
-let animationId: number
-let particles: ReturnType<typeof createParticleField>
-let structures: ReturnType<typeof createWireframeStructures>
+// --- Watch progress to update everything ---
+watch(progress, (p) => {
+  const camera = getCamera()
+  if (camera) updateCamera(camera, p)
+  if (progressRef.value) {
+    progressRef.value.style.height = `${p * 100}%`
+  }
+})
 
 onMounted(async () => {
-  // Loader
+  // Loader animation
   if (loaderFillRef.value) {
     gsap.to(loaderFillRef.value, {
       width: '100%',
-      duration: 1.5,
+      duration: 2,
       ease: 'power2.inOut',
       onComplete: () => {
         if (loaderRef.value) loaderRef.value.classList.add('hidden')
         if (navRef.value) navRef.value.classList.add('visible')
+        // Start virtual scroll after loader
+        startScroll()
       },
     })
   }
 
-  // Three.js
-  init()
-  const scene = getScene()
-  const camera = getCamera()
+  // Three.js init
+  const threeResult = init()
+  if (!threeResult) return
+  const { scene, camera } = threeResult as { scene: THREE.Scene; camera: THREE.PerspectiveCamera }
 
-  // Fog
-  scene.fog = new THREE.Fog(0x07161a, 40, 80)
+  scene.fog = new THREE.Fog(0x07161a, 30, 90)
 
-  // Scene objects
   particles = createParticleField(scene)
-  structures = createWireframeStructures(scene)
+  wireframes = createWireframeStructures(scene)
 
-  // Ambient light for wireframe visibility
-  scene.add(new THREE.AmbientLight(0xffffff, 0.3))
-
-  // Scroll timeline
-  buildScrollTimeline(camera)
-  animateEntrances()
-
-  // Render loop — continuous for particle drift
+  // Render loop
   function animate() {
     // Drift particles
-    const pos = particles.geometry.attributes.position
+    const pos = particles.geometry.attributes.position as THREE.BufferAttribute
     for (let i = 0; i < pos.count; i++) {
-      pos.array[i * 3] += particles.velocities[i * 3]
-      pos.array[i * 3 + 1] += particles.velocities[i * 3 + 1]
-      pos.array[i * 3 + 2] += particles.velocities[i * 3 + 2]
+      (pos.array as Float32Array)[i * 3] += particles.velocities[i * 3]
+      ;(pos.array as Float32Array)[i * 3 + 1] += particles.velocities[i * 3 + 1]
+      ;(pos.array as Float32Array)[i * 3 + 2] += particles.velocities[i * 3 + 2]
     }
     pos.needsUpdate = true
 
-    // Slow rotate wireframes
-    structures.ico.rotation.y += 0.001
-    structures.ico.rotation.x += 0.0005
-    structures.torus.rotation.z += 0.0008
-    structures.octa.rotation.y -= 0.0012
+    // Rotate wireframes
+    wireframes.ico.rotation.y += 0.0008
+    wireframes.ico.rotation.x += 0.0004
+    wireframes.torus.rotation.z += 0.0006
+    wireframes.octa.rotation.y -= 0.001
 
     render()
     animationId = requestAnimationFrame(animate)
   }
   animate()
 
-  window.addEventListener('resize', resize)
+  // Scramble effect on hover
   await nextTick()
-  ScrollTrigger.refresh()
+  bindAll(document.body)
+
+  window.addEventListener('resize', resize)
 })
 
 onUnmounted(() => {
   cancelAnimationFrame(animationId)
   dispose()
-  ScrollTrigger.getAll().forEach((t) => t.kill())
+  destroyScroll()
   window.removeEventListener('resize', resize)
 })
 </script>
