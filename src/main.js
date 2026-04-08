@@ -204,21 +204,18 @@ sceneManager.currentThreeScene = sceneManager.scenes[0].threeScene
 sceneManager.renderPass.scene = sceneManager.scenes[0].threeScene
 showSceneUI(0)
 
-// Loader: defer width change by one frame so CSS transition actually fires
-function dismissLoader() {
-  if (running) return
-  loader.classList.add('hidden')
-  nav.classList.add('visible')
-  scroll.start()
-  running = true
-  animate()
-}
+// Loader: simple timed dismiss — no CSS transition dependency
+loaderFill.style.width = '100%'
+loaderFill.style.transition = 'width 1.5s ease'
 
-loaderFill.style.transition = 'width 1.8s cubic-bezier(0.65, 0, 0.35, 1)'
-requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-    loaderFill.style.width = '100%'
-  })
-})
-loaderFill.addEventListener('transitionend', dismissLoader, { once: true })
-setTimeout(dismissLoader, 2200)
+setTimeout(() => {
+  loader.style.opacity = '0'
+  loader.style.transition = 'opacity 0.6s ease'
+  setTimeout(() => {
+    loader.style.display = 'none'
+    nav.classList.add('visible')
+    scroll.start()
+    running = true
+    animate()
+  }, 600)
+}, 1800)
