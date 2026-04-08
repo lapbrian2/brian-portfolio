@@ -69,8 +69,8 @@ export class SceneManager {
   }
 
   /** Transition to a new scene index with glitch effect */
-  transitionTo(index) {
-    if (index === this.activeScene || index < 0 || index >= this.scenes.length) return
+  transitionTo(index, force = false) {
+    if ((!force && index === this.activeScene) || index < 0 || index >= this.scenes.length) return
 
     this.isGlitching = true
     this.glitchPass.uniforms.intensity.value = 1.5
@@ -133,10 +133,13 @@ export class SceneManager {
     const s = this.scenes[this.activeScene]
     if (s && s.update) s.update(dt, elapsed)
 
-    // Update glitch time uniform
-    this.glitchPass.uniforms.time.value = elapsed
-
-    this.composer.render()
+    // Only use composer during glitch transitions — direct render otherwise
+    if (this.isGlitching) {
+      this.glitchPass.uniforms.time.value = elapsed
+      this.composer.render()
+    } else {
+      this.renderer.render(this.currentThreeScene, this.camera)
+    }
   }
 
   resize() {

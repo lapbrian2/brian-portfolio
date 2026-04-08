@@ -172,29 +172,43 @@ function updateFPS() {
 }
 
 // --- Render loop ---
+let running = false
 function animate() {
+  if (!running) return
   sceneManager.render()
   updateFPS()
   requestAnimationFrame(animate)
 }
 
-// --- Loader ---
-function startExperience() {
-  gsap.to(loaderFill, {
-    width: '100%',
-    duration: 1.8,
-    ease: 'power2.inOut',
-    onComplete() {
-      loader.classList.add('hidden')
-      nav.classList.add('visible')
-      scroll.start()
-      showSceneUI(0)
-    },
-  })
-}
-
 // --- Boot ---
 buildProjectUI()
 bindScramble()
-animate()
-startExperience()
+
+// Set initial scene (no glitch on first load)
+sceneManager.activeScene = 0
+sceneManager.currentThreeScene = sceneManager.scenes[0].threeScene
+sceneManager.renderPass.scene = sceneManager.scenes[0].threeScene
+showSceneUI(0)
+
+// Loader: animate fill, then dismiss and start
+loaderFill.style.transition = 'width 1.8s cubic-bezier(0.65, 0, 0.35, 1)'
+loaderFill.style.width = '100%'
+
+loaderFill.addEventListener('transitionend', () => {
+  loader.classList.add('hidden')
+  nav.classList.add('visible')
+  scroll.start()
+  running = true
+  animate()
+}, { once: true })
+
+// Fallback if transitionend doesn't fire
+setTimeout(() => {
+  if (!running) {
+    loader.classList.add('hidden')
+    nav.classList.add('visible')
+    scroll.start()
+    running = true
+    animate()
+  }
+}, 2500)
