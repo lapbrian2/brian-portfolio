@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brian Lapinski — Creative Developer & Systems Architect</title>
+  <meta name="theme-color" content="#07161a">
+  <meta name="description" content="Brian Lapinski is a creative web developer and systems architect building immersive digital experiences with WebGL, Three.js, and agentic AI systems.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Brian Lapinski — Creative Developer & Systems Architect">
+  <meta property="og:description" content="Immersive digital experiences. WebGL, Three.js, agentic AI systems.">
+  <meta property="og:url" content="https://brian-lapinski.com">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: "SpaceGrotesk";
+      src: url("https://fonts.gstatic.com/s/spacegrotesk/v16/V8mDoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff2") format("woff2");
+      font-weight: 300 700;
+      font-display: swap;
+    }
+    body {
+      background: #07161a;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      height: 100svh;
+      overflow: hidden;
+      margin: 0;
+      color: #fff;
+    }
+    a, button { text-decoration: none; color: inherit; }
+    img { opacity: 0; }
+
+    /* Loader — visible immediately */
+    .loader {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #07161a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.8s, visibility 0.8s; }
+    .loader__row { display: flex; justify-content: space-between; align-items: center; width: min(80vw, 600px); }
+    .loader__wait { font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.5; }
+    .loader__label { font-size: 16px; font-weight: 600; }
+    .loader__bar { width: min(80vw, 600px); height: 1px; background: rgba(255,255,255,0.15); margin-top: 24px; position: relative; }
+    .loader__fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #fff; transition: width 0.2s; }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div class="loader" id="loader">
+    <div class="loader__row">
+      <span class="loader__wait">[Please wait]</span>
+      <span class="loader__label">Loading experience</span>
+    </div>
+    <div class="loader__bar">
+      <div class="loader__fill" id="loader-fill"></div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav id="nav" class="nav">
+    <span class="nav__name" data-scramble>Brian Lapinski</span>
+    <button class="nav__contact" data-scramble id="btn-contact">Click to contact</button>
+  </nav>
+
+  <!-- Three.js Canvas — z-index 1 -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Progress bar -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+
+  <!-- UI Layer — z-index 50, all scenes stacked fixed -->
+  <div id="ui-layer" class="ui-layer">
+
+    <!-- Scene 0: Hero -->
+    <section id="scene-0-ui" class="scene-ui visible">
+      <div class="scene-ui__top">
+        <h1 class="display display--lg flicker">
+          <span class="dim">Building</span> immersive<br>
+          digital <span class="dim">experiences ―</span>
+        </h1>
+        <p class="display flicker">
+          <span class="dim">Creative</span> development<br>
+          <span class="dim">&amp;</span> agentic systems
+        </p>
+      </div>
+      <div class="scene-ui__bottom">
+        <p class="scroll-cta">[<span>Scroll</span>] to explore</p>
+      </div>
+    </section>
+
+    <!-- Scene 1: About -->
+    <section id="scene-1-ui" class="scene-ui">
+      <div class="scene-ui__full">
+        <h2 class="display flicker">
+          Creative <span class="dim">Web</span> Developer<br>
+          <span class="dim">&amp; Systems</span> Architect
+        </h2>
+        <div class="skills">
+          <p>WebGL &amp; Three.js, <span class="dim">GSAP Animations,</span></p>
+          <p>Agentic AI Systems, <span class="dim">Memory Architectures,</span></p>
+          <p><span class="dim">MCP Toolchains,</span> Interactive Experiences <span class="dim">&amp; Beyond.</span></p>
+        </div>
+        <p class="meta" style="margin-top:2rem">
+          Microsoft / Amazon / Aya Healthcare<br>
+          /// Independent Creative Developer
+        </p>
+      </div>
+    </section>
+
+    <!-- Scene 2: Featured Work -->
+    <section id="scene-2-ui" class="scene-ui scene-ui--work">
+      <h2 class="overline">Featured Work</h2>
+      <div class="featured-grid" id="featured-grid"></div>
+      <h3 class="overline" style="margin-top:1.5rem">Infrastructure &amp; Systems</h3>
+      <div class="supporting-list" id="supporting-list"></div>
+      <p class="meta" style="margin-top:1rem">Enterprise + independent builds since 2018</p>
+    </section>
+
+    <!-- Scene 3: Agentic Infrastructure -->
+    <section id="scene-3-ui" class="scene-ui">
+      <div class="scene-ui__full">
+        <h2 class="display flicker">
+          <span class="dim">Agentic</span> Infrastructure
+        </h2>
+        <div class="skills">
+          <p>43 orchestrator skills, <span class="dim">tiered memory system,</span></p>
+          <p>Memory drift radar, <span class="dim">research sweeps,</span></p>
+          <p><span class="dim">MCP server pipelines,</span> self-improving <span class="dim">architectures.</span></p>
+        </div>
+        <p class="meta" style="margin-top:2rem">
+          /// The tools that build the tools<br>
+          /// 40+ sessions of accumulated intelligence
+        </p>
+      </div>
+    </section>
+
+    <!-- Scene 4: Contact -->
+    <section id="scene-4-ui" class="scene-ui">
+      <div class="scene-ui__footer">
+        <ul class="contact-links">
+          <li><a href="mailto:hello@brianlapinski.com" data-scramble target="_blank">Email</a></li>
+          <li><a href="https://www.linkedin.com/in/brian-lapinski/" data-scramble target="_blank">LinkedIn</a></li>
+          <li><a href="https://github.com/lapbrian2" data-scramble target="_blank">GitHub</a></li>
+        </ul>
+        <p class="meta" style="margin-top:3rem">
+          Thanks for visiting<br>
+          Development &amp; design by Brian Lapinski
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Works Detail Overlay -->
+  <div id="works-overlay" class="works-overlay">
+    <button id="works-close" class="works-overlay__close" data-scramble>Close</button>
+    <div class="works-overlay__content">
+      <div class="works-overlay__image" id="works-image"></div>
+      <h2 class="works-overlay__title" id="works-title"></h2>
+      <p class="works-overlay__desc meta" id="works-desc"></p>
+      <p class="works-overlay__stack meta" id="works-stack"></p>
+      <div class="works-overlay__actions" id="works-actions"></div>
+    </div>
+  </div>
+
+  <!-- Contact Popup -->
+  <div id="contact-popup" class="contact-popup">
+    <button id="contact-close" class="contact-popup__close" data-scramble>Close</button>
+    <ul class="contact-popup__links">
+      <li><a href="mailto:hello@brianlapinski.com" data-scramble target="_blank">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/brian-lapinski/" data-scramble target="_blank">LinkedIn</a></li>
+      <li><a href="https://github.com/lapbrian2" data-scramble target="_blank">GitHub</a></li>
+    </ul>
+  </div>
+
+  <!-- Copyright -->
+  <p class="copyright" id="copyright">
+    <span id="fps-ui"></span> /// 2026 &copy; Brian Lapinski. All rights reserved.
+  </p>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

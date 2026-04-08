@@ -1,0 +1,83 @@
+export const FEATURED = [
+  {
+    id: 'style-dna',
+    name: 'Style DNA Extractor',
+    short: 'AI-powered visual style extraction',
+    image: '/projects/style-dna.png',
+    description: 'Shipped product. Reverse-engineers visual styles into reproducible AI generation parameters. Opus-powered extraction engine with Supabase auth, Stripe billing, and a design system called "The Synthetic Architect."',
+    stack: 'NUXT 4 / CLAUDE OPUS / SUPABASE / STRIPE',
+    url: 'https://style-dna-extractor.vercel.app/',
+    github: null,
+  },
+  {
+    id: 'session-pulser',
+    name: 'Session Pulser',
+    short: 'Sci-fi session analytics dashboard',
+    image: null,
+    description: 'Sci-fi themed session analytics dashboard. 3D topographic terrain visualization of token usage, activity heatmaps, draggable panel layout, terminal resumption via WebSocket PTY. The engineering standard for dense data visualization.',
+    stack: 'THREE.JS / XTERM.JS / WEBSOCKET / NODE.JS',
+    url: null,
+    github: null,
+  },
+  {
+    id: 'bomb-the-web',
+    name: 'Bomb The Web',
+    short: 'Graffiti-inspired 3D portfolio',
+    image: null,
+    description: 'Single-file 3700-line index.html. Three.js toon-shaded spray cans, GSAP scroll choreography, interactive spray paint canvas, Web Audio synthesized effects, and 7 hidden Easter eggs including Konami code party mode.',
+    stack: 'THREE.JS / GSAP / WEB AUDIO / CANVAS 2D',
+    url: 'https://brian-lapinski-portfolio.vercel.app/',
+    github: 'https://github.com/lapbrian2/bomb-the-web',
+  },
+  {
+    id: 'ml-systems',
+    name: 'ML Systems Universe',
+    short: 'Interactive ML ecosystem map',
+    image: '/projects/ml-systems.png',
+    description: 'Interactive 3D visualization mapping the machine learning ecosystem. Navigate models, architectures, and training paradigms as constellations in a dark-field universe.',
+    stack: 'THREE.JS / D3.JS / GSAP',
+    url: 'https://ml-systems-universe.vercel.app/',
+    github: null,
+  },
+]
+
+export const SUPPORTING = [
+  {
+    id: 'memory-system',
+    name: 'Agent Memory System',
+    short: 'Tiered persistent memory with drift detection',
+    description: 'Tiered persistent memory architecture with session journals, distilled memory (11x compression), heuristic injection, and drift radar. Research Radar feeds frontier intelligence on 24-hour sweep cycles. The continuity layer across 40+ agent sessions.',
+    stack: 'OBSIDIAN / MCP / PYTHON / YAML',
+    url: null,
+    github: null,
+  },
+  {
+    id: 'skills-orchestrator',
+    name: 'Skills Orchestrator',
+    short: '43-skill MCP server with self-improvement',
+    description: '43-skill MCP server with dynamic loading, memory-augmented dispatch, and context tree CRUD. Skills match, load, execute, and self-improve across sessions.',
+    stack: 'MCP / PYTHON / SQLITE / YAML',
+    url: null,
+    github: null,
+  },
+  {
+    id: 'cli-anything',
+    name: 'CLI-Anything',
+    short: 'GUI software → agent-controllable APIs',
+    description: 'Turns GUI software into agent-controllable APIs. 22 MCP tools across GIMP, Blender, Inkscape, and Draw.io. 1,508 passing tests across 11 applications. YAML recipe system for reusable pipelines.',
+    stack: 'PYTHON / MCP / PILLOW / BPY / SVG',
+    url: null,
+    github: null,
+  },
+  {
+    id: 'petri-dish',
+    name: 'Petri Dish',
+    short: 'Biological information runtime',
+    description: 'D3-force graph with electron animation, traversal replay, microscope lens, and comparison mode. Renders how information flows through living systems.',
+    stack: 'D3-FORCE / CANVAS 2D / CHUNKING PIPELINE',
+    url: null,
+    github: null,
+  },
+]
+
+export const ALL = [...FEATURED, ...SUPPORTING]

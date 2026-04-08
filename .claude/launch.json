@@ -4,8 +4,8 @@
     {
       "name": "brian-portfolio",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeArgs": ["run", "dev", "--", "--port", "3050"],
+      "port": 3050
     }
   ]
 }
