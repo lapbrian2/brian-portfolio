@@ -147,31 +147,6 @@ function showSceneUI(index) {
   })
 }
 
-// --- Init ---
-const sceneManager = new SceneManager(canvas)
-sceneManager.addScene(createHeroScene())
-sceneManager.addScene(createAboutScene())
-sceneManager.addScene(createWorkScene())
-sceneManager.addScene(createAgenticScene())
-sceneManager.addScene(createFooterScene())
-
-const scroll = new VirtualScroll(5, {
-  onProgress(progress, localProgress, scene) {
-    // Update camera within active scene
-    sceneManager.updateCamera(scene, localProgress)
-
-    // Progress bar
-    progressFill.style.height = `${progress * 100}%`
-
-    // Render
-    sceneManager.render()
-  },
-  onSceneChange(newScene, prevScene) {
-    showSceneUI(newScene)
-    sceneManager.transitionTo(newScene)
-  },
-})
-
 // --- FPS counter ---
 let frameCount = 0
 let lastFPSUpdate = performance.now()
@@ -187,35 +162,69 @@ function updateFPS() {
 
 // --- Render loop ---
 let running = false
+let sceneManager = null
+let scroll = null
+
 function animate() {
-  if (!running) return
+  if (!running || !sceneManager) return
   sceneManager.render()
   updateFPS()
   requestAnimationFrame(animate)
+}
+
+// --- Dismiss loader (runs no matter what) ---
+function dismissLoader() {
+  loader.style.opacity = '0'
+  loader.style.transition = 'opacity 0.6s ease'
+  setTimeout(() => {
+    loader.style.display = 'none'
+    nav.classList.add('visible')
+    if (scroll) scroll.start()
+    running = true
+    animate()
+  }, 600)
 }
 
 // --- Boot ---
 buildProjectUI()
 bindScramble()
 
-// Set initial scene (no glitch on first load)
-sceneManager.activeScene = 0
-sceneManager.currentThreeScene = sceneManager.scenes[0].threeScene
-sceneManager.renderPass.scene = sceneManager.scenes[0].threeScene
-showSceneUI(0)
-
-// Loader: simple timed dismiss — no CSS transition dependency
+// Start loader fill animation immediately
 loaderFill.style.width = '100%'
 loaderFill.style.transition = 'width 1.5s ease'
 
-setTimeout(() => {
-  loader.style.opacity = '0'
-  loader.style.transition = 'opacity 0.6s ease'
-  setTimeout(() => {
-    loader.style.display = 'none'
-    nav.classList.add('visible')
-    scroll.start()
-    running = true
-    animate()
-  }, 600)
-}, 1800)
+// Schedule loader dismiss FIRST — this runs even if 3D init fails
+setTimeout(dismissLoader, 1800)
+
+// Then try to initialize 3D (non-blocking)
+try {
+  sceneManager = new SceneManager(canvas)
+  sceneManager.addScene(createHeroScene())
+  sceneManager.addScene(createAboutScene())
+  sceneManager.addScene(createWorkScene())
+  sceneManager.addScene(createAgenticScene())
+  sceneManager.addScene(createFooterScene())
+
+  // Set initial scene
+  sceneManager.activeScene = 0
+  sceneManager.currentThreeScene = sceneManager.scenes[0].threeScene
+  sceneManager.renderPass.scene = sceneManager.scenes[0].threeScene
+
+  scroll = new VirtualScroll(5, {
+    onProgress(progress, localProgress, scene) {
+      sceneManager.updateCamera(scene, localProgress)
+      progressFill.style.height = `${progress * 100}%`
+      sceneManager.render()
+    },
+    onSceneChange(newScene, prevScene) {
+      showSceneUI(newScene)
+      sceneManager.transitionTo(newScene)
+    },
+  })
+
+  showSceneUI(0)
+} catch (err) {
+  console.error('[Portfolio] 3D init failed:', err)
+  // Site still works — loader dismisses, text content shows
+  showSceneUI(0)
+}
